@@ -24,6 +24,12 @@ int main(void)
  WDTCTL = WDTPW + WDTHOLD;
  BCSCTL1 = CALBC1_12MHZ; //SET TIMER REQ TO 12MHZ
  DCOCTL = CALDCO_12MHZ; //-||-
+ TACTL = TASSEL_2+MC_1+ID_0+TACLR;
+ TACCTL0 = CCIE;
+ CCR0 = 32768-1; // vērtība līdz kurai skaita taimeris
+ BCSCTL2 = SELM_0+DIVM_0+SELS_1+DIVS_1;
+ CTL1 &= ~XTS;
+ BCSCTL3 = (XT2S_0+XCAP_3);
 
  P2DIR &= ~0x30;
  P2IES |= 0x30;
@@ -47,7 +53,7 @@ int main(void)
  {
   if(h==1000){
     h=0;
-  time_engine(1); 
+   
   } 
   digit_pos = (digit_pos+1)%4;
   if (mode == 0)
@@ -348,3 +354,9 @@ __interrupt void P2_ISR(void)
   }
  }
 }
+
+#pragma vector = TIMER0_A0_VECTOR 
+__interrupt voidTimer_A(void) //divi undescori!!! 
+{
+ time_engine(1); 
+ }
